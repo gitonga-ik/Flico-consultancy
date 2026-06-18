@@ -2,12 +2,12 @@
 
 Flico Consultancy is a professional counselling and training organization dedicated to helping individuals, families, and organizations address addiction, chronic stress, and life challenges. This project is a modern, responsive website built to showcase their services, educational resources, and books.
 
-## 🌟 Mission & Vision
+## Mission & Vision
 
 - **Vision:** To nurture a healthier and more resilient society through counselling, social support, and awareness programs.
 - **Mission:** To empower individuals and organizations by spreading awareness on addiction and chronic stress through counselling services, mentorship programs, training workshops, and educational resources.
 
-## 🛠 Services
+## Services
 
 Flico Consultancy offers a range of specialized services, including:
 - **Addiction Counselling:** Professional support for alcohol and substance addiction.
@@ -15,21 +15,21 @@ Flico Consultancy offers a range of specialized services, including:
 - **Youth Mentorship:** Guiding young people to discover their purpose and make positive life choices.
 - **Workplace Productivity:** Time management and workplace addiction training.
 
-## 📚 Educational Resources (Books)
+## Educational Resources (Books)
 
 The site features several published works aimed at personal and professional growth:
 - **Saved from Addiction for a Higher Calling:** Support for overcoming alcohol addiction.
 - **The Courage to Begin:** A guide to finding purpose and building a meaningful legacy.
 - **My Money Story:** Overcoming psychological barriers to achieve financial success.
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Framework:** [Next.js](https://nextjs.org/) (App Router)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Icons:** [Bootstrap Icons](https://icons.getbootstrap.com/)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 
-## 💻 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -56,7 +56,7 @@ The site features several published works aimed at personal and professional gro
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
-## 🤝 Partners
+## Partners
 
 Flico Consultancy has collaborated with various organizations, including:
 - Equity Bank
