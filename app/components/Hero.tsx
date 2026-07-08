@@ -3,7 +3,7 @@ import Link from "next/link";
 const Hero = () => {
   return (
     <section
-      className="relative py-30 px-5 text-center bg-cover bg-center text-white"
+      className="relative py-30 px-5 text-center bg-cover bg-center text-white scroll-mt-16"
       style={{
         backgroundImage: `linear-gradient(rgba(86, 139, 179, 0.85), rgba(22, 77, 119, 0.85)), url(images/hero.jpeg)`,
       }}

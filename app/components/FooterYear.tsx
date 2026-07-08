@@ -10,8 +10,8 @@ const FooterYear = () => {
   
   return (
     <div className="text-center md:text-right space-y-1">
-      <p className="text-gray-200">{currentYear}</p>
-      <p className="text-gray-300 text-sm">All Rights Reserved</p>
+      <p className="text-gray-300 text-sm">&copy;{currentYear} All Rights Reserved</p>
+      <i>~ Flico is awesome, don't you think ^_~ </i>
     </div>
   );
 };

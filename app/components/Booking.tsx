@@ -1,6 +1,6 @@
 const Booking = () => {
   return (
-    <section id="contact" className="py-15 px-5 bg-[#fefdfd]">
+    <section id="contact" className="py-15 px-5 bg-[#fefdfd] scroll-mt-16">
       <div className="container mx-auto">
         <h2 className="text-center text-[#164d77] text-3xl font-semibold mb-8">
           Get in Touch With Us

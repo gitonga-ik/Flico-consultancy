@@ -1,7 +1,7 @@
 const About = () => {
   return (
     <>
-      <section id="about" className="py-15 px-5">
+      <section id="about" className="py-15 px-5 scroll-mt-16">
         <div className="container mx-auto max-w-4xl text-center mb-12">
           <h2 className="text-[#164d77] text-3xl font-semibold mb-4">
             About Flico Consultancy
@@ -44,7 +44,7 @@ const About = () => {
         </div>
       </section>
 
-      <section id="services" className="pt-4 pb-8 px-5 bg-gray-50/50">
+      <section id="services" className="pt-4 pb-8 px-5 bg-gray-50/50 scroll-mt-16">
         <div className="container mx-auto max-w-5xl">
           <h2 className="text-center text-[#164d77] text-3xl font-semibold mb-12">
             Our Services
