@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model books {
+  ID          Int    @id @default(autoincrement())
+  TITLE       String @db.VarChar(150)
+  DESCRIPTION String @db.VarChar(255)
+  PRICE       Int
+  FILE_PATH   String @db.VarChar(200)
+  SLUG        String @unique(map: "books_pk") @db.VarChar(150)
+}
