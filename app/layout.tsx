@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import React from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./globals.css";
-import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,13 +17,6 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Flico Consultancy",
-
-  other: {
-    // "stylesheet-bootstrap":
-    //   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
-    "stylesheet-icons":
-      "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css",
-  },
 };
 
 export default function RootLayout({
@@ -33,15 +27,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} data-scroll-behavior="smooth"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col">
-        {children}
-        <Script
-          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-          strategy="lazyOnload"
-        />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
+      <Analytics />
     </html>
   );
 }
