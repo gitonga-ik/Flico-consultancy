@@ -6,6 +6,7 @@ import {prisma} from "@/prisma/prisma";
 import {booksCreateInput} from "@/app/generated/prisma/models/books";
 import {logger} from "@/utils/logger";
 import sharp from "sharp";
+import generatePreviews from "@/utils/generatePreviews";
 
 export interface BookData {
     title: string;
@@ -42,6 +43,8 @@ export async function uploadDocument(document: File | null, image: File | null, 
             await fs.writeFile(imagePath, webPImageBuffer);
             await fs.writeFile(filePath, documentBuffer);
 
+            await generatePreviews(filePath);
+
             const book: booksCreateInput = {
                 TITLE: info.title.trim(),
                 DESCRIPTION: info.description.trim(),
@@ -51,10 +54,10 @@ export async function uploadDocument(document: File | null, image: File | null, 
             }
 
             const bookSlug = await recordBook(book);
-            logger.info(`Inserted record for ${book.TITLE} successfully.`)
             if (!bookSlug) {
                 return false;
             }
+            logger.info(`Inserted record for ${book.TITLE} successfully.`)
             return bookSlug;
         } else {
             // uploads to an online datastore e.g. S3

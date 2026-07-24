@@ -3,6 +3,8 @@
 import Image from "next/image";
 import {useState} from "react";
 import {sendVerificationMail} from "@/Mail/comm";
+import {ArrowLeft} from "lucide-react";
+import Link from "next/link";
 
 interface BookInfo {
     title: string;
@@ -32,6 +34,13 @@ const BookDetails = ({book}: Book) => {
 
     return (
         <section id="book-details" className="py-12 px-4 sm:px-6 lg:px-8">
+            <Link
+                href="/books"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-150 group"
+            >
+                <ArrowLeft className="w-4 h-4 transition-transform duration-150 group-hover:-translate-x-1" />
+                <span>Back to catalogue</span>
+            </Link>
             <div className="mx-auto max-w-5xl bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="flex flex-col md:flex-row min-h-112.5">
                     <div
