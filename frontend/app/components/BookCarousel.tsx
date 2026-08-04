@@ -87,7 +87,7 @@ export default function BookPreviewCarousel({
           {pages.map((pageNumber) => (
             <div key={pageNumber} className="relative h-full w-full shrink-0">
               <Image
-                src={`/images/previews/${bookTitle}/page_${pageNumber}.webp`}
+                src={`uploads/images/previews/${bookTitle}/page_${pageNumber}.webp`}
                 alt={`${bookTitle} — preview page ${pageNumber}`}
                 fill
                 sizes="(max-width: 768px) 100vw, 400px"
@@ -148,7 +148,7 @@ export default function BookPreviewCarousel({
             }`}
           >
             <Image
-              src={`/images/previews/${bookTitle}/page_${pageNumber}.webp`}
+              src={`uploads/images/previews/${bookTitle}/page_${pageNumber}.webp`}
               alt={`${bookTitle} — thumbnail page ${pageNumber}`}
               fill
               sizes="80px"
@@ -192,7 +192,7 @@ export default function BookPreviewCarousel({
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={`/images/previews/${bookTitle}/page_${activeIndex + 1}.webp`}
+              src={`uploads/images/previews/${bookTitle}/page_${activeIndex + 1}.webp`}
               alt={`${bookTitle} — preview page ${activeIndex + 1}, full size`}
               fill
               sizes="90vw"

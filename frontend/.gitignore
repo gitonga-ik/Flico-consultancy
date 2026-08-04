@@ -53,10 +53,7 @@ prev/
 /.idea
 
 # uploads (covers and books)
-public/uploads
-public/covers
-public/images/books
-public/images/previews
+uploads/
 
 # logs
 app.log

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {usePathname} from "next/navigation";
 import {useState} from "react";
-import {BookData} from "@/utils/actions"
+import {BookData} from "@/utils/interfaces"
 
 interface PageInfo {
     title: string;
@@ -74,7 +74,7 @@ const Books = ({title, books}: PageInfo) => {
                                 >
                                     <figure className="w-full max-w-sm">
                                         <Image
-                                            src={`/covers/${book.title.toLowerCase().replaceAll(" ", "_")}.webp`}
+                                            src={`uploads/covers/${book.title.toLowerCase().replaceAll(" ", "_")}.webp`}
                                             alt={book.title}
                                             width={500}
                                             height={500}

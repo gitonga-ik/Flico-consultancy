@@ -10,6 +10,7 @@ const Footer = () => {
                     <div className="flex justify-center md:justify-start">
                         <Image
                             src="/images/favicon.png"
+                            loading="eager"
                             alt="Company logo"
                             width={500}
                             height={500}

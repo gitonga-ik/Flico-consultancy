@@ -1,32 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import {useState} from "react";
-import {sendVerificationMail} from "@/Mail/comm";
+import {SyntheticEvent, useState} from "react";
 import {ArrowLeft} from "lucide-react";
 import Link from "next/link";
+import {createOrder} from "@/utils/actions";
 
 interface BookInfo {
-    title: string;
-    description: string;
-    price: string;
+    book: {
+        id?: number;
+        title: string;
+        description: string;
+        price: string;
+    }
 }
 
-interface Book {
-    book: BookInfo;
-}
-
-const BookDetails = ({book}: Book) => {
+const BookDetails = ({book}: BookInfo) => {
     const [email, setEmail] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
 
-    async function handleSubmit() {
+    async function handleSubmit(event: SyntheticEvent) {
+        event.preventDefault();
         setError(null);
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email.trim())) setError("Provide a valid email address.")
 
-        const result = await sendVerificationMail(email);
+        const result = await createOrder(book, email);
 
         if (!result) setError("Please try again");
         return true;
@@ -38,7 +38,7 @@ const BookDetails = ({book}: Book) => {
                 href="/books"
                 className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-150 group"
             >
-                <ArrowLeft className="w-4 h-4 transition-transform duration-150 group-hover:-translate-x-1" />
+                <ArrowLeft className="w-4 h-4 transition-transform duration-150 group-hover:-translate-x-1"/>
                 <span>Back to catalogue</span>
             </Link>
             <div className="mx-auto max-w-5xl bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -48,7 +48,7 @@ const BookDetails = ({book}: Book) => {
                         <div
                             className="relative w-48 sm:w-60 md:w-full max-w-70 aspect-3/4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden bg-gray-100">
                             <Image
-                                src={`/covers/${book.title.toLowerCase().replaceAll(" ", "_")}.webp`}
+                                src={`uploads/covers/${book.title.toLowerCase().replaceAll(" ", "_")}.webp`}
                                 alt={book.title}
                                 width={500}
                                 height={500}

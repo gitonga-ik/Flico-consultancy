@@ -8,10 +8,31 @@ datasource db {
 }
 
 model books {
-  ID          Int    @id @default(autoincrement())
-  TITLE       String @db.VarChar(150)
-  DESCRIPTION String @db.VarChar(255)
+  ID          Int      @id @default(autoincrement())
+  TITLE       String   @db.VarChar(150)
+  DESCRIPTION String   @db.VarChar(255)
   PRICE       Int
-  FILE_PATH   String @db.VarChar(200)
-  SLUG        String @unique(map: "books_pk") @db.VarChar(150)
+  FILE_PATH   String   @db.VarChar(200)
+  SLUG        String   @unique(map: "books_pk") @db.VarChar(150)
+  orders      orders[]
+}
+
+model orders {
+  ID                Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  EMAIL             String               @db.VarChar(100)
+  BOOK_ID           Int
+  ORDER_STATUS      orders_ORDER_STATUS? @default(INACTIVE)
+  PAYMENT           Boolean?             @default(false)
+  DATE_CREATED      DateTime?            @default(now()) @db.Timestamp(0)
+  DATE_LAST_UPDATED DateTime             @default(now()) @updatedAt
+  books             books                @relation(fields: [BOOK_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_books_to_orders")
+
+  @@index([BOOK_ID], map: "fk_books_to_orders")
+}
+
+enum orders_ORDER_STATUS {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  CLOSED
 }
