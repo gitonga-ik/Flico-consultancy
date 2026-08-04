@@ -7,7 +7,7 @@ import {readFileSync, mkdirSync} from "node:fs";
 import path from "node:path";
 
 export default async function generatePreviews(pdfPath: string): Promise<void> {
-    const previewDirectory = path.resolve("public", "images", "previews");
+    const previewDirectory = path.resolve("uploads", "images", "previews");
 
     const buffer = readFileSync(pdfPath);
     const doc = mupdf.Document.openDocument(buffer, "application/pdf");

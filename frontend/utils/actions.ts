@@ -7,19 +7,17 @@ import {booksCreateInput} from "@/app/generated/prisma/models/books";
 import {logger} from "@/utils/logger";
 import sharp from "sharp";
 import generatePreviews from "@/utils/generatePreviews";
+import {SignJWT} from "jose";
+import {sendVerificationMail} from "@/Mail/comm";
+import {BookData, BookInfo, OrderDetails} from "@/utils/interfaces";
 
-export interface BookData {
-    title: string;
-    price: string;
-    description: string;
-    slug? : string;
-}
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
 export async function uploadDocument(document: File | null, image: File | null, info: BookData, local = 1): Promise<string | boolean> {
     if (!document) throw new Error("Document required for upload.")
     if (!image) throw new Error("Book cover image is required")
 
-    try{
+    try {
         if (local) {
             const documentArrayBuffer = await document.arrayBuffer();
             const documentBuffer = Buffer.from(documentArrayBuffer);
@@ -27,13 +25,13 @@ export async function uploadDocument(document: File | null, image: File | null, 
             const imageArrayBuffer = await image.arrayBuffer();
             const imageBuffer = Buffer.from(imageArrayBuffer);
 
-            const webPImageBuffer = await sharp(imageBuffer).webp({ quality: 80 }).toBuffer();
+            const webPImageBuffer = await sharp(imageBuffer).webp({quality: 80}).toBuffer();
 
             const fileExt = document.name.lastIndexOf(".") === 0 || -1 ? ".pdf" :
                 document.name.slice(document.name.lastIndexOf(".")).toLowerCase();
 
-            const uploadDir = path.parse("public/uploads");
-            const coverDir = path.parse("public/covers");
+            const uploadDir = path.parse("uploads/docs");
+            const coverDir = path.parse("uploads/covers");
             const imagePath = path.join(path.format(coverDir), `${info.title.trim().toLowerCase().replaceAll(" ", "_")}.webp`)
             const filePath = path.join(path.format(uploadDir), `${info.title.trim().toLowerCase().replaceAll(" ", "_")}${fileExt}`);
 
@@ -63,7 +61,7 @@ export async function uploadDocument(document: File | null, image: File | null, 
             // uploads to an online datastore e.g. S3
             return false;
         }
-    }catch(error){
+    } catch (error) {
         logger.error(`Could not save book information: ${error}`)
         return false;
     }
@@ -86,6 +84,7 @@ export async function fetchBook(slug: string): Promise<BookData | false> {
         const book = await prisma.books.findUniqueOrThrow({
             where: {SLUG: slug},
             select: {
+                ID: true,
                 TITLE: true,
                 DESCRIPTION: true,
                 PRICE: true,
@@ -95,6 +94,7 @@ export async function fetchBook(slug: string): Promise<BookData | false> {
 
         logger.info(`${book.TITLE} record fetched.`)
         return {
+            id: book.ID,
             title: book.TITLE,
             price: String(book.PRICE),
             description: book.DESCRIPTION,
@@ -127,6 +127,67 @@ export async function fetchAllBooks(): Promise<BookData[] | false> {
     }
 }
 
-export async function createOrder(){
+export async function createOrder(book: BookInfo["book"], email: string): Promise<boolean> {
+    try {
+        const order = await prisma.orders.create({
+            data: {
+                EMAIL: email,
+                books: {
+                    connect: {
+                        ID: book.id
+                    }
+                }
+            }
+        })
+        logger.info(`Order for ${book.title} by ${email} created`)
 
+        const payload = {order_id: order.ID};
+
+        const token = await new SignJWT(payload)
+            .setProtectedHeader({alg: "HS256"})
+            .setIssuedAt()
+            .setExpirationTime("6h")
+            .sign(SECRET_KEY);
+
+        return sendVerificationMail(order.EMAIL, encodeURI(token));
+    } catch (error) {
+        logger.error(`Error creating order for ${book.title}: ${error}`)
+        return false;
+    }
+}
+
+export async function fetchOrder(id: Uint8Array<ArrayBuffer>): Promise<false | OrderDetails> {
+    try {
+        const order = await prisma.orders.findUniqueOrThrow({
+            select: {
+                ID: true,
+                EMAIL: true,
+                books: {
+                    select: {
+                        TITLE: true,
+                        PRICE: true,
+                        SLUG: true,
+                    }
+                }
+            },
+            where: {
+                ID: id
+            }
+        });
+
+        // TODO:Activate order upon fetching
+
+        return {
+            id: Buffer.from(order.ID).toString("hex"),
+            email: order.EMAIL,
+            book: {
+                title: order.books.TITLE,
+                price: order.books.PRICE,
+                slug: order.books.SLUG,
+            },
+        };
+    } catch (error) {
+        logger.error(`Error fetching order with ID:${id}:${error}`)
+        return false;
+    }
 }
