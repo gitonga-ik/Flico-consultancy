@@ -1,10 +1,10 @@
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 model books {
@@ -18,19 +18,19 @@ model books {
 }
 
 model orders {
-  ID                Bytes                @id @default(dbgenerated("(uuid_to_bin(uuid()))")) @db.Binary(16)
+  ID                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   EMAIL             String               @db.VarChar(100)
   BOOK_ID           Int
-  ORDER_STATUS      orders_ORDER_STATUS? @default(INACTIVE)
+  ORDER_STATUS      orders_order_status? @default(INACTIVE)
   PAYMENT           Boolean?             @default(false)
   DATE_CREATED      DateTime?            @default(now()) @db.Timestamp(0)
-  DATE_LAST_UPDATED DateTime             @default(now()) @updatedAt
-  books             books                @relation(fields: [BOOK_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_books_to_orders")
+  DATE_LAST_UPDATED DateTime?            @default(now()) @db.Timestamp(6)
+  books             books                @relation(fields: [BOOK_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_books_to_order")
 
   @@index([BOOK_ID], map: "fk_books_to_orders")
 }
 
-enum orders_ORDER_STATUS {
+enum orders_order_status {
   ACTIVE
   INACTIVE
   CANCELLED
