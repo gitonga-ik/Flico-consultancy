@@ -5,6 +5,8 @@ import {fetchOrder} from "@/utils/actions";
 import {logger} from "@/utils/logger";
 import OrderNotFound from "@/app/components/OrderNotFound";
 
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
+
 interface PathParams {
     params: Promise<{ token: string }>;
 }
@@ -16,14 +18,12 @@ interface OrderJWT extends JWTPayload{
 async function retrieveOrder(token: string){
     try {
         const {payload} = await jwtVerify<OrderJWT>(token, SECRET_KEY, {algorithms: ["HS256"]})
-        return await fetchOrder(Buffer.from(Object.values(payload.order_id)))
+        return await fetchOrder(String(Object.values(payload.order_id)))
     }catch(error){
         logger.error(`Could not process order token: ${error}`)
         return false
     }
 }
-
-const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
 export default async function CheckoutPage({params}: PathParams) {
     const {token} = await params;
