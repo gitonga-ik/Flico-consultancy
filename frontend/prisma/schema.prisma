@@ -4,17 +4,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" 
 }
 
 model books {
-  ID          Int      @id @default(autoincrement())
-  TITLE       String   @db.VarChar(150)
-  DESCRIPTION String   @db.VarChar(255)
-  PRICE       Int
-  FILE_PATH   String   @db.VarChar(200)
-  SLUG        String   @unique(map: "books_pk") @db.VarChar(150)
-  orders      orders[]
+  ID           Int      @id @default(autoincrement())
+  TITLE        String   @db.VarChar(150)
+  DESCRIPTION  String   @db.VarChar(255)
+  PRICE        Int
+  FILE_PATH    String   @db.VarChar(200)
+  SLUG         String   @unique(map: "books_pk") @db.VarChar(150)
+  COVER_PATH   String   @db.VarChar(255)
+  PREVIEW_PATH String[]
+  orders       orders[]
 }
 
 model orders {

@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* config options here */images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+    ],
+  },
    devIndicators: false,
    // Allow ngrok traffic for dev
    allowedDevOrigins: ["subchronically-intergroup-shante.ngrok-free.dev"],
