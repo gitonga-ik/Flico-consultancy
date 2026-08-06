@@ -1,100 +1,24 @@
 "use server";
 
-import path from "node:path";
-import fs from "node:fs/promises";
 import { prisma } from "@/prisma/prisma";
 import { booksCreateInput } from "@/generated/prisma/models/books";
 import { logger } from "@/utils/logger";
-import sharp from "sharp";
-import generatePreviews from "@/utils/generatePreviews";
 import { SignJWT } from "jose";
 import { sendVerificationMail } from "@/Mail/comm";
 import { BookData, BookInfo, OrderDetails } from "@/utils/interfaces";
-import cloudinary from "@/utils/cloudinary";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
-
-export async function uploadDocument(
-  document: File | null,
-  image: File | null,
-  info: BookData,
-  local = 1,
-): Promise<string | boolean> {
-  if (!document) throw new Error("Document required for upload.");
-  if (!image) throw new Error("Book cover image is required");
-
-  try {
-    if (local) {
-      const documentArrayBuffer = await document.arrayBuffer();
-      const documentBuffer = Buffer.from(documentArrayBuffer);
-
-      const imageArrayBuffer = await image.arrayBuffer();
-      const imageBuffer = Buffer.from(imageArrayBuffer);
-
-      const webPImageBuffer = await sharp(imageBuffer)
-        .webp({ quality: 80 })
-        .toBuffer();
-
-      const fileExt =
-        document.name.lastIndexOf(".") === 0 || -1
-          ? ".pdf"
-          : document.name.slice(document.name.lastIndexOf(".")).toLowerCase();
-
-      const uploadDir = path.parse("uploads/docs");
-      const filePath = path.join(
-        path.format(uploadDir),
-        `${info.title.trim().toLowerCase().replaceAll(" ", "_")}${fileExt}`,
-      );
-      await fs.mkdir(path.format(uploadDir), { recursive: true });
-      await fs.writeFile(filePath, documentBuffer);
-
-      const coverDir = "images/covers/";
-
-      const cloudinaryResponse: any = await new Promise((resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream({ folder: coverDir }, (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          })
-          .end(webPImageBuffer);
-      });
-
-      const uploadedUrls: string[] = await generatePreviews(filePath);
-
-      const book: booksCreateInput = {
-        TITLE: info.title.trim(),
-        DESCRIPTION: info.description.trim(),
-        PRICE: Number(info.price),
-        SLUG: info.title.trim().toLowerCase().replaceAll(" ", "_"),
-        FILE_PATH: filePath,
-        COVER_PATH: cloudinaryResponse.secure_url,
-        PREVIEW_PATH: uploadedUrls,
-      };
-
-      const bookSlug = await recordBook(book);
-      if (!bookSlug) {
-        return false;
-      }
-      logger.info(`Inserted record for ${book.TITLE} successfully.`);
-      return bookSlug;
-    } else {
-      // uploads to an online datastore e.g. S3
-      return false;
-    }
-  } catch (error) {
-    logger.error(`Could not save book information: ${error}`);
-    return false;
-  }
-}
 
 export async function recordBook(book: booksCreateInput) {
   try {
     const newBook = await prisma.books.create({
       data: book,
     });
+
+    logger.info(`Inserted record for ${book.TITLE} successfully.`);
     return newBook.SLUG;
   } catch (error) {
-    logger.error(`Could not save record to db: ${error}`);
+    logger.error(`Could not save book record to db: ${error}`);
     return false;
   }
 }
