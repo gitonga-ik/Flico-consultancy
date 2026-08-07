@@ -6,13 +6,16 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { createOrder } from "@/utils/actions";
 import { BookInfo } from "@/utils/interfaces";
+import {SubmitButton} from "@/app/components/FormFields";
 
 const BookDetails = ({ book }: BookInfo) => {
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false)
 
   async function handleSubmit(event: SyntheticEvent) {
     event.preventDefault();
+    setLoading(true)
     setError(null);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,6 +25,7 @@ const BookDetails = ({ book }: BookInfo) => {
     const result = await createOrder(book, email);
 
     if (!result) setError("Please try again");
+    setLoading(false)
     return true;
   }
 
@@ -146,13 +150,9 @@ const BookDetails = ({ book }: BookInfo) => {
                         >
                           Cancel
                         </button>
+                        
+                        <SubmitButton loading={loading}>{"Get Payment Link"}</SubmitButton>
 
-                        <button
-                          type="submit"
-                          className="btn bg-[#3674a3] hover:bg-[#198796] text-white font-medium border-none rounded-xl px-6"
-                        >
-                          Get Payment Link
-                        </button>
                       </div>
                     </form>
                   </div>

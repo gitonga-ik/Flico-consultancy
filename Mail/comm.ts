@@ -12,6 +12,7 @@ const BASE_URL = process.env.BASE_URL;
 export async function sendVerificationMail(email: string, token: string): Promise<boolean> {
     if (!email) throw new Error("Provide valid email");
 
+    console.log("sending mail")
     try {
         const {data, error} = await resend.emails.send({
             from: 'onboarding@resend.dev',

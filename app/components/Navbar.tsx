@@ -12,6 +12,7 @@ const Navbar = () => {
                             alt="Company logo"
                             width={500}
                             height={500}
+                            loading="eager"
                             className="h-12.5 w-30 object-cover"
                         />
                     </div>

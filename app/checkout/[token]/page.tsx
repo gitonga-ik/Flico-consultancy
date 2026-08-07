@@ -12,13 +12,13 @@ interface PathParams {
 }
 
 interface OrderJWT extends JWTPayload{
-    order_id: Uint8Array<ArrayBuffer>
+    order_id: string
 }
 
 async function retrieveOrder(token: string){
     try {
         const {payload} = await jwtVerify<OrderJWT>(token, SECRET_KEY, {algorithms: ["HS256"]})
-        return await fetchOrder(String(Object.values(payload.order_id)))
+        return await fetchOrder(payload.order_id)
     }catch(error){
         logger.error(`Could not process order token: ${error}`)
         return false
