@@ -1,19 +1,18 @@
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Books from "./components/Books";
 import Booking from "./components/Booking";
+import {fetchAllBooks} from "@/utils/actions";
 
-export default function Home() {
+export default async function Home() {
+  const books = await fetchAllBooks();
+
   return (
     <main>
-      <Navbar />
       <Hero />
       <About />
-      <Books />
+      <Books title={"Books"} books={books} />
       <Booking />
-      <Footer />
     </main>
   );
 }

@@ -1,46 +1,111 @@
-const Books = () => {
-  return (
-    <section id="books" className="py-15 px-5 scroll-mt-16">
-      <div className="container mx-auto max-w-6xl">
-        <h2 className="text-center text-[#164d77] text-3xl font-semibold mb-12">
-          Books
-        </h2>
+"use client";
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
-          {[
-            {
-              img: "saved_from_addiction_for_a_higher_calling.jpg",
-              title: "Saved from Addiction for a Higher Calling",
-              desc: "Supporting those dealing with alcohol addiction and those managing them.",
-            },
-            {
-              img: "the_courage_to_begin.jpg",
-              title: "The Courage to Begin",
-              desc: "Helping individuals find their purpose and build a meaningful legacy.",
-            },
-            {
-              img: "my_money_story.jpg",
-              title: "My Money Story",
-              desc: "Overcoming psychological barriers to achieve financial success.",
-            },
-          ].map((book, index) => (
-            <div key={index} className="text-center max-w-[18rem]">
-              <div className="bg-white rounded-lg shadow-md overflow-hidden hover:scale-105 transition-transform duration-300">
-                <img
-                  src={`images/${book.img}`}
-                  className="w-full h-auto object-cover"
-                  alt={book.title}
-                />
-              </div>
-              <h5 className="mt-4 text-[#164d77] font-semibold text-lg">
-                {book.title}
-              </h5>
-              <p className="text-gray-600 text-sm mt-1">{book.desc}</p>
-            </div>
-          ))}
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { BookData } from "@/utils/interfaces";
+
+interface PageInfo {
+  title: string;
+  books: false | BookData[];
+}
+
+const Books = ({ title, books }: PageInfo) => {
+  const pathname = usePathname();
+  const [query, setQuery] = useState("");
+  let search = true;
+
+  if (books == false) {
+    return (
+      <section id="books" className="py-8 px-5 scroll-mt-8">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-center text-[#164d77] text-3xl font-semibold mb-5">
+            {title}
+          </h2>
+          <p className="text-center text-[#164d77] text-xl font-semibold mb-5">
+            No books to display for now. Come back later ^_~
+          </p>
         </div>
-      </div>
-    </section>
+      </section>
+    );
+  }
+
+  if (pathname == "/") {
+    books = books.slice(0, 3);
+    search = false;
+  }
+
+  const filtered = books.filter((book) => {
+    const target = query.toLowerCase();
+
+    return (
+      book.title.toLowerCase().includes(target) ||
+      (book.description ?? "").toLowerCase().includes(target)
+    );
+  });
+
+  return (
+    <>
+      {filtered && (
+        <section id="books" className="py-8 px-5 scroll-mt-8">
+          <div className="container mx-auto max-w-6xl">
+            <h2 className="text-center text-[#164d77] text-3xl font-semibold mb-5">
+              {title}
+            </h2>
+
+            {search ? (
+              <input
+                type="text"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search using title..."
+                className="w-full border border-[#d6cfc5] rounded-xl px-4 py-4 mb-8
+                   font-dm-sans text-sm bg-white focus:outline-none
+                   focus:ring-2 focus:ring-[#a3d3d0] transition"
+              />
+            ) : null}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
+              {filtered && filtered.length > 0 ? (
+                filtered?.map((book, index) => (
+                  <div
+                    key={index}
+                    className="card bg-base-100 w-90 shadow-sm flex justify-center"
+                  >
+                    <figure className="w-full max-w-sm">
+                      <Image
+                        src={book.cover_path ?? "/images/default_cover.png"}
+                        alt={book.title}
+                        width={500}
+                        height={500}
+                        className="w-full h-auto object-cover"
+                      />
+                    </figure>
+                    <div className="card-body">
+                      <h2 className="card-title">{book.title}</h2>
+                      <p>{book.description}</p>
+                      <div className="card-actions justify-end">
+                        <Link
+                          href={`/books/${book.title.toLowerCase().replaceAll(" ", "_")}`}
+                          className="inline-block btn hover:bg-[#a3d3d0] py-2"
+                        >
+                          View book
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-[#164d77] text-md font-semibold mb-5">
+                  No books match your search. Come back later ^_~
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 };
 

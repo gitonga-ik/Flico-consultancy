@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# include env example for easier setup
+!.env.example
+
 # vercel
 .vercel
 
@@ -43,6 +46,17 @@ next-env.d.ts
 # prev
 prev/
 
-# front and backend
-frontend/
-backend/
+# prisma generated types
+/app/generated/prisma
+
+# webstorm settings
+/.idea
+
+# uploads (covers and books)
+uploads/
+
+# logs
+app.log
+
+# prisma ganerated types
+/generated

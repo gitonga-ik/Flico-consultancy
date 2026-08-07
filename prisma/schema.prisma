@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql" 
+}
+
+model books {
+  ID           Int      @id @default(autoincrement())
+  TITLE        String   @db.VarChar(150)
+  DESCRIPTION  String   @db.VarChar(255)
+  PRICE        Int
+  FILE_PATH    String   @db.VarChar(200)
+  SLUG         String   @unique(map: "books_pk") @db.VarChar(150)
+  COVER_PATH   String   @db.VarChar(255)
+  PREVIEW_PATH String[]
+  orders       orders[]
+}
+
+model orders {
+  ID                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  EMAIL             String               @db.VarChar(100)
+  BOOK_ID           Int
+  ORDER_STATUS      orders_order_status? @default(INACTIVE)
+  PAYMENT           Boolean?             @default(false)
+  DATE_CREATED      DateTime?            @default(now()) @db.Timestamp(0)
+  DATE_LAST_UPDATED DateTime?            @default(now()) @db.Timestamp(6)
+  books             books                @relation(fields: [BOOK_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_books_to_order")
+
+  @@index([BOOK_ID], map: "fk_books_to_orders")
+}
+
+enum orders_order_status {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  CLOSED
+}
