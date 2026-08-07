@@ -2,7 +2,6 @@
 
 import { prisma } from "@/prisma/prisma";
 import { booksCreateInput } from "@/generated/prisma/models/books";
-import { logger } from "@/utils/logger";
 import { SignJWT } from "jose";
 import { sendVerificationMail } from "@/Mail/comm";
 import { BookData, BookInfo, OrderDetails } from "@/utils/interfaces";
@@ -15,10 +14,22 @@ export async function recordBook(book: booksCreateInput) {
       data: book,
     });
 
-    logger.info(`Inserted record for ${book.TITLE} successfully.`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "info",
+        message: `Inserted record for ${book.TITLE} successfully.`,
+      }),
+    );
     return newBook.SLUG;
   } catch (error) {
-    logger.error(`Could not save book record to db: ${error}`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Could not save book record to db: ${error}`,
+      }),
+    );
     return false;
   }
 }
@@ -37,8 +48,13 @@ export async function fetchBook(slug: string): Promise<BookData | false> {
         PREVIEW_PATH: true,
       },
     });
-
-    logger.info(`${book.TITLE} record fetched.`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "info",
+        message: `${book.TITLE} record fetched.`,
+      }),
+    );
     return {
       id: book.ID,
       title: book.TITLE,
@@ -49,7 +65,13 @@ export async function fetchBook(slug: string): Promise<BookData | false> {
       previews: book.PREVIEW_PATH,
     } as unknown as BookData;
   } catch (error) {
-    logger.error(`Could not get book record: ${error}.`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Could not get book record: ${error}.`,
+      }),
+    );
     return false;
   }
 }
@@ -72,7 +94,13 @@ export async function fetchAllBooks(): Promise<BookData[] | false> {
       cover_path: book.COVER_PATH,
     })) as BookData[];
   } catch (error) {
-    logger.error(`Unable to fetch book records. ${error}`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Unable to fetch book records: ${error}`,
+      }),
+    );
     return false;
   }
 }
@@ -92,8 +120,13 @@ export async function createOrder(
         },
       },
     });
-    logger.info(`Order for ${book.title} by ${email} created`);
-
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "info",
+        message: `Order for ${book.title} by ${email} created`,
+      }),
+    );
     const payload = { order_id: order.ID };
 
     const token = await new SignJWT(payload)
@@ -104,7 +137,13 @@ export async function createOrder(
 
     return sendVerificationMail(order.EMAIL, encodeURI(token));
   } catch (error) {
-    logger.error(`Error creating order for ${book.title}: ${error}`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Error creating order for ${book.title}: ${error}`,
+      }),
+    );
     return false;
   }
 }
@@ -140,7 +179,13 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
       },
     };
   } catch (error) {
-    logger.error(`Error fetching order with ID:${id}:${error}`);
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Error fetching order with ID:${id}:${error}`,
+      }),
+    );
     return false;
   }
 }
