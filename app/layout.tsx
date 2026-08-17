@@ -6,6 +6,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import Navbar from "./components/Navbar";
 import Footer from "@/app/components/Footer";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,11 +36,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        <main className="grow pb-4">
-          {children}
-        </main>
+        <main className="grow pb-4">{children}</main>
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
         <Footer />
-        </body>
+      </body>
       <Analytics />
     </html>
   );
