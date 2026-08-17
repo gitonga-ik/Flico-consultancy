@@ -36,8 +36,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        <main className="grow pb-4">{children}</main>
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+        <main className="grow pb-4">
+          {children}
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
+        </main>
         <Footer />
       </body>
       <Analytics />
