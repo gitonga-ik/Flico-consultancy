@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Flico Consultancy",
+  verification: { 
+	google : "QkOR8c2KHS1N5JvO7wMTtkrKdl95Ug9m6z9jjlOBzAI"
+  }
 };
 
 export default function RootLayout({
