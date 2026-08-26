@@ -3,6 +3,8 @@ import OrderManager from "@/app/components/OrderManager";
 import { jwtVerify, JWTPayload } from "jose";
 import { activateOrder, fetchOrder } from "@/utils/actions";
 import OrderNotFound from "@/app/components/OrderNotFound";
+import { notFound } from "next/navigation";
+import ClosedOrderPage from "@/app/components/OrderClosed";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
@@ -19,7 +21,6 @@ async function retrieveOrder(token: string) {
     const { payload } = await jwtVerify<OrderJWT>(token, SECRET_KEY, {
       algorithms: ["HS256"],
     });
-    if (!(await activateOrder(payload.order_id))) return;
     return await fetchOrder(payload.order_id);
   } catch (error) {
     console.log(
@@ -40,6 +41,12 @@ export default async function CheckoutPage({ params }: PathParams) {
   if (!orderDetails) {
     return <OrderNotFound />;
   }
+  console.log(orderDetails);
+  if (orderDetails.status === "CLOSED") {
+    return <ClosedOrderPage />;
+  }
+
+  if(!(await activateOrder(orderDetails.id))) return ;
 
   return (
     <div className="min-h-screen bg-base-100">

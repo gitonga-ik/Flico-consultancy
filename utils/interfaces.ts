@@ -1,3 +1,4 @@
+import { orders_order_status } from "@/generated/prisma/enums";
 import { UUID } from "node:crypto";
 
 export interface BookData {
@@ -24,6 +25,7 @@ export interface OrderDetails {
   id: string;
   email: string;
   customer_doc?: string;
+  status: orders_order_status | null;
   book: {
     title: string;
     price: number;

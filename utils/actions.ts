@@ -156,6 +156,7 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
         ID: true,
         EMAIL: true,
         CUST_DOC: true,
+        ORDER_STATUS: true,
         books: {
           select: {
             TITLE: true,
@@ -174,6 +175,7 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
       id: Buffer.from(order.ID).toString("hex"),
       email: order.EMAIL,
       customer_doc: order.CUST_DOC,
+      status: order.ORDER_STATUS,
       book: {
         title: order.books.TITLE,
         price: order.books.PRICE,
