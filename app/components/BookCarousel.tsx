@@ -22,8 +22,6 @@ export default function BookPreviewCarousel({
   const touchStartX = useRef<number | null>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // Fallback to the default cover image if previewUrls is not passed,
-  // otherwise resolve total count and array from previewUrls.
   const resolvedUrls =
     previewUrls.length > 0
       ? previewUrls
@@ -55,7 +53,6 @@ export default function BookPreviewCarousel({
     return () => window.removeEventListener("keydown", handleKey);
   }, [lightboxOpen, next, prev]);
 
-  // Touch swipe
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX;
   }

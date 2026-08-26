@@ -2,8 +2,6 @@ import BookDetails from "@/app/components/BookDetails";
 import {notFound} from "next/navigation";
 import {fetchBook} from "@/utils/actions";
 import BookPreviewCarousel from "@/app/components/BookCarousel";
-import path from "node:path";
-import fs from "fs";
 
 interface PathParams {
     params: Promise<{ slug: string }>;
@@ -18,7 +16,7 @@ const bookInfo = async ({params}: PathParams) => {
     return (
         <>
             <BookDetails book={book}/>
-            {book.previews && book.slug ? <BookPreviewCarousel bookTitle={book.slug} previewUrls={book.previews}/> : null}
+            {book.previews && book.slug ? <BookPreviewCarousel bookTitle={book.title} previewUrls={book.previews}/> : null}
         </>
     );
 };

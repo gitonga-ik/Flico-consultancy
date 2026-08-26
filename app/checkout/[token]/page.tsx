@@ -1,7 +1,7 @@
 import React from "react";
 import OrderManager from "@/app/components/OrderManager";
 import { jwtVerify, JWTPayload } from "jose";
-import { fetchOrder } from "@/utils/actions";
+import { activateOrder, fetchOrder } from "@/utils/actions";
 import OrderNotFound from "@/app/components/OrderNotFound";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
@@ -19,6 +19,7 @@ async function retrieveOrder(token: string) {
     const { payload } = await jwtVerify<OrderJWT>(token, SECRET_KEY, {
       algorithms: ["HS256"],
     });
+    if (!(await activateOrder(payload.order_id))) return;
     return await fetchOrder(payload.order_id);
   } catch (error) {
     console.log(

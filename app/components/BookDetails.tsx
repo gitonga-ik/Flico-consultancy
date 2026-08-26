@@ -11,6 +11,7 @@ import {SubmitButton} from "@/app/components/FormFields";
 const BookDetails = ({ book }: BookInfo) => {
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false)
 
   async function handleSubmit(event: SyntheticEvent) {
@@ -25,6 +26,7 @@ const BookDetails = ({ book }: BookInfo) => {
     const result = await createOrder(book, email);
 
     if (!result) setError("Please try again");
+    setMessage("Payment link sent successfully")
     setLoading(false)
     return true;
   }

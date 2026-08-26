@@ -23,9 +23,11 @@ export interface BookInfo {
 export interface OrderDetails {
   id: string;
   email: string;
+  customer_doc?: string;
   book: {
     title: string;
     price: number;
     slug: string;
+    link: string;
   };
 }

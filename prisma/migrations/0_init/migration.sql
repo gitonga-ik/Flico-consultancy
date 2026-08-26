@@ -1,0 +1,42 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
+-- CreateEnum
+CREATE TYPE "orders_order_status" AS ENUM ('ACTIVE', 'INACTIVE', 'CANCELLED', 'CLOSED');
+
+-- CreateTable
+CREATE TABLE "books" (
+    "ID" SERIAL NOT NULL,
+    "TITLE" VARCHAR(150) NOT NULL,
+    "DESCRIPTION" VARCHAR(255) NOT NULL,
+    "PRICE" INTEGER NOT NULL,
+    "FILE_PATH" VARCHAR(200) NOT NULL,
+    "SLUG" VARCHAR(150) NOT NULL,
+    "COVER_PATH" VARCHAR(255) NOT NULL,
+    "PREVIEW_PATH" TEXT[],
+
+    CONSTRAINT "books_pkey" PRIMARY KEY ("ID")
+);
+
+-- CreateTable
+CREATE TABLE "orders" (
+    "ID" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "EMAIL" VARCHAR(100) NOT NULL,
+    "BOOK_ID" INTEGER NOT NULL,
+    "ORDER_STATUS" "orders_order_status" DEFAULT 'INACTIVE',
+    "PAYMENT" BOOLEAN DEFAULT false,
+    "DATE_CREATED" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP,
+    "DATE_LAST_UPDATED" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "orders_pkey" PRIMARY KEY ("ID")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "books_pk" ON "books"("SLUG");
+
+-- CreateIndex
+CREATE INDEX "fk_books_to_orders" ON "orders"("BOOK_ID");
+
+-- AddForeignKey
+ALTER TABLE "orders" ADD CONSTRAINT "fk_books_to_order" FOREIGN KEY ("BOOK_ID") REFERENCES "books"("ID") ON DELETE NO ACTION ON UPDATE NO ACTION;
+

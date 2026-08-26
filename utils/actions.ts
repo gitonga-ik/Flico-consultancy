@@ -5,6 +5,7 @@ import { booksCreateInput } from "@/generated/prisma/models/books";
 import { SignJWT } from "jose";
 import { sendVerificationMail } from "@/Mail/comm";
 import { BookData, BookInfo, OrderDetails } from "@/utils/interfaces";
+import addPdfWatermark from "@/utils/watermark";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
@@ -154,11 +155,13 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
       select: {
         ID: true,
         EMAIL: true,
+        CUST_DOC: true,
         books: {
           select: {
             TITLE: true,
             PRICE: true,
             SLUG: true,
+            FILE_PATH: true,
           },
         },
       },
@@ -167,15 +170,15 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
       },
     });
 
-    // TODO:Activate order upon fetching
-
     return {
       id: Buffer.from(order.ID).toString("hex"),
       email: order.EMAIL,
+      customer_doc: order.CUST_DOC,
       book: {
         title: order.books.TITLE,
         price: order.books.PRICE,
         slug: order.books.SLUG,
+        link: order.books.FILE_PATH,
       },
     };
   } catch (error) {
@@ -184,6 +187,57 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
         timestamp: new Date().toISOString(),
         level: "error",
         message: `Error fetching order with ID:${id}:${error}`,
+      }),
+    );
+    return false;
+  }
+}
+
+export async function activateOrder(id: string): Promise<boolean> {
+  try {
+    await prisma.orders.update({
+      where: {
+        ID: id,
+      },
+      data: {
+        ORDER_STATUS: "ACTIVE",
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Error fetching order with ID:${id}:${error}`,
+      }),
+    );
+    return false;
+  }
+}
+
+export async function processCustomerDoc(order: OrderDetails) {
+  try {
+    const docUrl = await addPdfWatermark(order);
+    if (!docUrl) return false;
+
+    const updatedOrder = await prisma.orders.update({
+      where: {
+        ID: Buffer.from(order.id, "hex").toString("utf-8"),
+      },
+      data: {
+        ORDER_STATUS: "CLOSED",
+        CUST_DOC: docUrl,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Error processing document for order with ID:${order.id}:${error}`,
       }),
     );
     return false;
