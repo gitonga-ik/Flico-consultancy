@@ -33,3 +33,8 @@ export interface OrderDetails {
     link: string;
   };
 }
+
+export interface DownloadDetails {
+  link: string;
+  slug: string;
+}

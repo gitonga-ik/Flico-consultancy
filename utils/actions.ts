@@ -4,7 +4,12 @@ import { prisma } from "@/prisma/prisma";
 import { booksCreateInput } from "@/generated/prisma/models/books";
 import { SignJWT } from "jose";
 import { sendVerificationMail } from "@/Mail/comm";
-import { BookData, BookInfo, OrderDetails } from "@/utils/interfaces";
+import {
+  BookData,
+  BookInfo,
+  OrderDetails,
+  DownloadDetails,
+} from "@/utils/interfaces";
 import addPdfWatermark from "@/utils/watermark";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
@@ -199,7 +204,7 @@ export async function activateOrder(id: string): Promise<boolean> {
   try {
     await prisma.orders.update({
       where: {
-        ID: id,
+        ID: Buffer.from(id, "hex").toString("utf-8"),
       },
       data: {
         ORDER_STATUS: "ACTIVE",
@@ -207,6 +212,42 @@ export async function activateOrder(id: string): Promise<boolean> {
     });
 
     return true;
+  } catch (error) {
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Error fetching order with ID:${id}:${error}`,
+      }),
+    );
+    return false;
+  }
+}
+
+export async function getDownloadLink(
+  id: string,
+): Promise<DownloadDetails | false> {
+  try {
+    const order = await prisma.orders.findUniqueOrThrow({
+      where: {
+        ID: id,
+        PAYMENT: true,
+        ORDER_STATUS: "CLOSED",
+      },
+      select: {
+        CUST_DOC: true,
+        books: {
+          select: {
+            SLUG: true,
+          },
+        },
+      },
+    });
+
+    return {
+      link: order.CUST_DOC,
+      slug: order.books.SLUG,
+    } as unknown as DownloadDetails;
   } catch (error) {
     console.log(
       JSON.stringify({

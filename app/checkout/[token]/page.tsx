@@ -3,7 +3,6 @@ import OrderManager from "@/app/components/OrderManager";
 import { jwtVerify, JWTPayload } from "jose";
 import { activateOrder, fetchOrder } from "@/utils/actions";
 import OrderNotFound from "@/app/components/OrderNotFound";
-import { notFound } from "next/navigation";
 import ClosedOrderPage from "@/app/components/OrderClosed";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
