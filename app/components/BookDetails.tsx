@@ -6,16 +6,17 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { createOrder } from "@/utils/actions";
 import { BookInfo } from "@/utils/interfaces";
-import {SubmitButton} from "@/app/components/FormFields";
+import { SubmitButton } from "@/app/components/FormFields";
 
 const BookDetails = ({ book }: BookInfo) => {
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false)
+  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function handleSubmit(event: SyntheticEvent) {
     event.preventDefault();
-    setLoading(true)
+    setLoading(true);
     setError(null);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,7 +26,8 @@ const BookDetails = ({ book }: BookInfo) => {
     const result = await createOrder(book, email);
 
     if (!result) setError("Please try again");
-    setLoading(false)
+    setMessage("Payment link sent successfully");
+    setLoading(false);
     return true;
   }
 
@@ -89,73 +91,169 @@ const BookDetails = ({ book }: BookInfo) => {
                 </button>
 
                 <dialog id="purchase-email-modal" className="modal">
-                  <div className="modal-box max-w-md rounded-2xl">
+                  <div className="modal-box max-w-md rounded-2xl bg-white p-0 shadow-xl">
                     {error ? (
-                      <div role="alert" className="alert alert-error">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6 shrink-0 stroke-current"
-                          fill="none"
-                          viewBox="0 0 24 24"
+                      /* Error state */
+                      <div className="p-6">
+                        <div
+                          role="alert"
+                          className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span>{error}</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="mt-0.5 h-6 w-6 shrink-0 stroke-current"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+
+                          <span className="text-sm font-medium">{error}</span>
+                        </div>
+
+                        <div className="modal-action mt-6">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              (
+                                document.getElementById(
+                                  "purchase-email-modal",
+                                ) as HTMLDialogElement | null
+                              )?.close()
+                            }
+                            className="btn btn-ghost rounded-xl text-slate-600 hover:bg-slate-100"
+                          >
+                            Close
+                          </button>
+                        </div>
                       </div>
-                    ) : null}
-                    <h3 className="font-bold text-xl text-slate-800">
-                      Complete Your Purchase
-                    </h3>
+                    ) : message ? (
+                      /* Success state */
+                      <div className="p-8 text-center">
+                        {/* Success icon */}
+                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#a3d3d0]/25">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#a3d3d0]">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-8 w-8 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2.5"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
 
-                    <p className="py-4 text-sm text-slate-500 leading-relaxed">
-                      Please enter a valid, active email address below. We will
-                      use this email to send your secure payment link and
-                      deliver your book download instantly once payment is
-                      complete.
-                    </p>
+                        {/* Heading */}
+                        <h3 className="mt-6 text-2xl font-bold text-slate-800">
+                          Payment Link Sent!
+                        </h3>
 
-                    <form method="dialog" onSubmit={handleSubmit}>
-                      <div className="form-control w-full">
-                        <label className="label">
-                          <span className="label-text font-medium text-slate-700">
-                            Email Address
-                          </span>
-                        </label>
-                        <input
-                          type="email"
-                          name="customer_email"
-                          placeholder="you@example.com"
-                          onChange={(event) => setEmail(event.target.value)}
-                          required
-                          className="input input-bordered w-full rounded-xl focus:outline-none focus:border-[#3674a3]"
-                        />
+                        {/* Message */}
+                        <p className="mt-3 text-sm leading-6 text-slate-500">
+                          {message}
+                        </p>
+
+                        {/* Additional information */}
+                        <div className="mt-6 rounded-xl bg-[#a3d3d0]/10 px-4 py-3 text-left">
+                          <p className="text-sm font-medium text-slate-700">
+                            Check your inbox
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-slate-500">
+                            We&apos;ve sent the payment link to your email
+                            address. Follow the link to complete your purchase
+                            securely.
+                          </p>
+                        </div>
+
+                        {/* Close */}
+                        <div className="mt-7">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              (
+                                document.getElementById(
+                                  "purchase-email-modal",
+                                ) as HTMLDialogElement | null
+                              )?.close()
+                            }
+                            className="btn w-full rounded-xl border-0 bg-[#a3d3d0] text-slate-800 hover:bg-[#8fc5c1]"
+                          >
+                            Close
+                          </button>
+                        </div>
                       </div>
+                    ) : (
+                      /* Purchase form */
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-slate-800">
+                          Complete Your Purchase
+                        </h3>
 
-                      <div className="modal-action mt-6 gap-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            (
-                              document.getElementById(
-                                "purchase-email-modal",
-                              ) as HTMLDialogElement | null
-                            )?.close()
-                          }
-                          className="btn btn-ghost rounded-xl text-slate-500 hover:bg-slate-100"
-                        >
-                          Cancel
-                        </button>
-                        
-                        <SubmitButton loading={loading}>{"Get Payment Link"}</SubmitButton>
+                        <p className="py-4 text-sm leading-relaxed text-slate-500">
+                          Please enter a valid, active email address below. We
+                          will use this email to send your secure payment link
+                          and deliver your book download instantly once payment
+                          is complete.
+                        </p>
 
+                        <form method="dialog" onSubmit={handleSubmit}>
+                          <div className="form-control w-full">
+                            <label className="label">
+                              <span className="label-text font-medium text-slate-700">
+                                Email Address
+                              </span>
+                            </label>
+
+                            <input
+                              type="email"
+                              name="customer_email"
+                              placeholder="you@example.com"
+                              onChange={(event) => setEmail(event.target.value)}
+                              required
+                              className="input input-bordered w-full rounded-xl focus:border-[#3674a3] focus:outline-none"
+                            />
+                          </div>
+
+                          <div className="modal-action mt-6 gap-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                (
+                                  document.getElementById(
+                                    "purchase-email-modal",
+                                  ) as HTMLDialogElement | null
+                                )?.close()
+                              }
+                              className="btn btn-ghost rounded-xl text-slate-500 hover:bg-slate-100"
+                            >
+                              Cancel
+                            </button>
+
+                            <SubmitButton loading={loading}>
+                              Get Payment Link
+                            </SubmitButton>
+                          </div>
+                        </form>
                       </div>
-                    </form>
+                    )}
                   </div>
+
+                  {/* Click backdrop to close */}
+                  <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                  </form>
                 </dialog>
               </div>
             </div>

@@ -3,7 +3,9 @@
 import resend from "@/Mail/mailer";
 import { readFileSync } from "fs";
 import VerificationEmail from "@/Mail/verification/VerificationEmail";
+import DownloadEmail from "@/Mail/download/DownloadEmail";
 import "dotenv/config";
+import { OrderDetails } from "@/utils/interfaces";
 
 const logoBuffer = readFileSync("public/images/favicon.png");
 const BASE_URL = process.env.BASE_URL;
@@ -14,7 +16,6 @@ export async function sendVerificationMail(
 ): Promise<boolean> {
   if (!email) throw new Error("Provide valid email");
 
-  console.log("sending mail");
   try {
     const { data, error } = await resend.emails.send({
       from: "onboarding@resend.dev",
@@ -45,7 +46,7 @@ export async function sendVerificationMail(
     console.log(
       JSON.stringify({
         timestamp: new Date().toISOString(),
-        level: "error",
+        level: "info",
         message: `Mail sent to ${email} successfully.`,
       }),
     );
@@ -56,6 +57,57 @@ export async function sendVerificationMail(
         timestamp: new Date().toISOString(),
         level: "error",
         message: `Could not send email to address ${email}: ${error}`,
+      }),
+    );
+    return false;
+  }
+}
+
+export async function sendDownloadMail(order: OrderDetails) {
+  if (!order.email) throw new Error("Provide valid email");
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: order.email,
+      subject: `Download ${order.book.title}` ,
+      react: DownloadEmail({
+        productName: `${order.book.title}`,
+        downloadUrl: `${BASE_URL}download/${Buffer.from(order.id, "hex").toString("utf-8")}`,
+      }),
+      attachments: [
+        {
+          filename: "logo.png",
+          content: logoBuffer,
+          contentId: "flico-logo",
+        },
+      ],
+    });
+
+    if (error) {
+      console.log(
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          level: "error",
+          message: `Could not send email to address ${order.email}: ${error.message}`,
+        }),
+      );
+      return false;
+    }
+
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "info",
+        message: `Mail sent to ${order.email} successfully.`,
+      }),
+    );
+    return true;
+  } catch (error) {
+    console.log(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        level: "error",
+        message: `Could not send email to address ${order.email}: ${error}`,
       }),
     );
     return false;

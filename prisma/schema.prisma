@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider      = "prisma-client"
+  output        = "../generated/prisma"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql" 
+  provider = "postgresql"
 }
 
 model books {
@@ -26,6 +26,7 @@ model orders {
   BOOK_ID           Int
   ORDER_STATUS      orders_order_status? @default(INACTIVE)
   PAYMENT           Boolean?             @default(false)
+  CUST_DOC          String               @default("")
   DATE_CREATED      DateTime?            @default(now()) @db.Timestamp(0)
   DATE_LAST_UPDATED DateTime?            @default(now()) @db.Timestamp(6)
   books             books                @relation(fields: [BOOK_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_books_to_order")

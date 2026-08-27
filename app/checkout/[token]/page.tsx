@@ -1,8 +1,9 @@
 import React from "react";
 import OrderManager from "@/app/components/OrderManager";
 import { jwtVerify, JWTPayload } from "jose";
-import { fetchOrder } from "@/utils/actions";
+import { activateOrder, fetchOrder } from "@/utils/actions";
 import OrderNotFound from "@/app/components/OrderNotFound";
+import ClosedOrderPage from "@/app/components/OrderClosed";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET_KEY);
 
@@ -39,6 +40,12 @@ export default async function CheckoutPage({ params }: PathParams) {
   if (!orderDetails) {
     return <OrderNotFound />;
   }
+  console.log(orderDetails);
+  if (orderDetails.status === "CLOSED") {
+    return <ClosedOrderPage />;
+  }
+
+  if(!(await activateOrder(orderDetails.id))) return ;
 
   return (
     <div className="min-h-screen bg-base-100">
