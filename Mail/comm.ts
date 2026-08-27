@@ -69,7 +69,7 @@ export async function sendDownloadMail(order: OrderDetails) {
     const { data, error } = await resend.emails.send({
       from: "onboarding@resend.dev",
       to: order.email,
-      subject: "Email Verified",
+      subject: `Download ${order.book.title}` ,
       react: DownloadEmail({
         productName: `${order.book.title}`,
         downloadUrl: `${BASE_URL}download/${Buffer.from(order.id, "hex").toString("utf-8")}`,
