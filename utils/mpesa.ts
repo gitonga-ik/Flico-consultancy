@@ -40,7 +40,7 @@ export async function getAccessToken() {
       }
 
       const data = await response.json();
-      await rclient.set("token", data.access_token, { EX: 3540 });
+      await rclient.set("token", data.access_token, { ex: 3540 });
       return data.access_token;
     }
 

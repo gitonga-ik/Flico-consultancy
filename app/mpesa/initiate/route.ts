@@ -103,7 +103,7 @@ export async function POST(request: Request) {
         );
       }
       rclient.set(data.CheckoutRequestID, transactionId, {
-        EX: EXPIRATION_TIME,
+        ex: EXPIRATION_TIME,
       });
 
       return NextResponse.json(
