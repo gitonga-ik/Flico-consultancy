@@ -1,10 +1,11 @@
-import { createClient } from "redis";
+import { Redis } from "@upstash/redis";
+import dotenv from "dotenv";
 
-const rclient = createClient({
-  url: "redis://localhost:6379",
+dotenv.config();
+
+const rclient = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
-rclient.on("error", (err) => console.log("Redis Client Error", err));
-
-await rclient.connect();
 
 export default rclient;
