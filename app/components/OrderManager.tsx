@@ -1,42 +1,45 @@
-"use client"
+"use client";
 
-import React, {useState} from "react";
-import {CheckoutSteps, Step} from "@/app/components/CheckoutSteps";
+import React, { useState } from "react";
+import { CheckoutSteps, Step } from "@/app/components/CheckoutSteps";
 import ConfirmOrderStep from "@/app/components/ConfirmOrder";
 import PaymentStep from "@/app/components/Payment";
 import SuccessStep from "@/app/components/PaymentSuccess";
-import {useRouter} from "next/navigation";
-import {OrderDetails} from "@/utils/interfaces";
+import { useRouter } from "next/navigation";
+import { OrderDetails } from "@/utils/interfaces";
 
-interface OrderManagerProps{
-    orderDetails: OrderDetails
+interface OrderManagerProps {
+  orderDetails: OrderDetails;
 }
 
-const OrderManager = ({orderDetails} : OrderManagerProps) => {
-    const [step, setStep] = useState<Step>("confirm");
-    const router = useRouter();
+const OrderManager = ({ orderDetails }: OrderManagerProps) => {
+  const [step, setStep] = useState<Step>("confirm");
+  const router = useRouter();
 
-    return (
-        <>
-            <CheckoutSteps step={step}/>
+  return (
+    <>
+      <CheckoutSteps step={step} />
 
-            <div className="mt-10">
-                {step === "confirm" && (
-                    <ConfirmOrderStep
-                        order={orderDetails}
-                        onEdit={() => router.push("/books")}
-                        onConfirm={() => setStep("payment")}
-                    />
-                )}
+      <div className="mt-10">
+        {step === "confirm" && (
+          <ConfirmOrderStep
+            order={orderDetails}
+            onEdit={() => router.push("/books")}
+            onConfirm={() => setStep("payment")}
+          />
+        )}
 
-                {step === "payment" && (
-                    <PaymentStep onSuccess={() => setStep("success")}/>
-                )}
+        {step === "payment" && (
+          <PaymentStep
+            onSuccess={() => setStep("success")}
+            order={orderDetails}
+          />
+        )}
 
-                {step === "success" && <SuccessStep order={orderDetails}/>}
-            </div>
-        </>
-    );
+        {step === "success" && <SuccessStep order={orderDetails} />}
+      </div>
+    </>
+  );
 };
 
 export default OrderManager;

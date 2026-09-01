@@ -66,7 +66,7 @@ export default async function addPdfWatermark(
 
     const pdfBytes = await pdfDoc.save();
     const customerDocBuffer = Buffer.from(pdfBytes);
-    const filepath = `customer_docs/${Buffer.from(order.id, "hex").toString("utf-8")}_${Date.now()}.pdf`;
+    const filepath = `customer_docs/${order.id}_${Date.now()}.pdf`;
     const { data, error: uploadError } = await storage
       .from("customer_docs")
       .upload(filepath, customerDocBuffer, {

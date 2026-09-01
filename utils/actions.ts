@@ -177,7 +177,8 @@ export async function fetchOrder(id: string): Promise<false | OrderDetails> {
     });
 
     return {
-      id: Buffer.from(order.ID).toString("hex"),
+      id: order.ID,
+      // id: Buffer.from(order.ID).toString("hex"),
       email: order.EMAIL,
       customer_doc: order.CUST_DOC,
       status: order.ORDER_STATUS,
@@ -204,7 +205,8 @@ export async function activateOrder(id: string): Promise<boolean> {
   try {
     await prisma.orders.update({
       where: {
-        ID: Buffer.from(id, "hex").toString("utf-8"),
+        ID: id,
+        // ID: Buffer.from(id, "hex").toString("utf-8"),
       },
       data: {
         ORDER_STATUS: "ACTIVE",
@@ -265,9 +267,9 @@ export async function processCustomerDoc(order: OrderDetails) {
     const docUrl = await addPdfWatermark(order);
     if (!docUrl) return false;
 
-    const updatedOrder = await prisma.orders.update({
+    await prisma.orders.update({
       where: {
-        ID: Buffer.from(order.id, "hex").toString("utf-8"),
+        ID: order.id,
       },
       data: {
         ORDER_STATUS: "CLOSED",
