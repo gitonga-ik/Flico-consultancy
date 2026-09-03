@@ -72,7 +72,7 @@ export async function sendDownloadMail(order: OrderDetails) {
       subject: `Download ${order.book.title}` ,
       react: DownloadEmail({
         productName: `${order.book.title}`,
-        downloadUrl: `${BASE_URL}download/${Buffer.from(order.id, "hex").toString("utf-8")}`,
+        downloadUrl: `${BASE_URL}download/${order.id}`,
       }),
       attachments: [
         {

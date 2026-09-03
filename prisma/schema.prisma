@@ -1,10 +1,12 @@
 generator client {
-  provider      = "prisma-client"
-  output        = "../generated/prisma"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
+  url      = env("DATABASE_URL")
   provider = "postgresql"
 }
 
@@ -30,6 +32,7 @@ model orders {
   DATE_CREATED      DateTime?            @default(now()) @db.Timestamp(0)
   DATE_LAST_UPDATED DateTime?            @default(now()) @db.Timestamp(6)
   books             books                @relation(fields: [BOOK_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_books_to_order")
+  mpesaTransactions MpesaTransaction[]
 
   @@index([BOOK_ID], map: "fk_books_to_orders")
 }
@@ -39,4 +42,41 @@ enum orders_order_status {
   INACTIVE
   CANCELLED
   CLOSED
+}
+
+enum MpesaTransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  TIMEOUT
+}
+
+model MpesaTransaction {
+  ID String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  ORDER_ID                String  @db.Uuid
+  CONTACT                 String
+  AMOUNT                  Decimal @db.Decimal(10, 2)
+  TRANSACTION_DESCRIPTION String?
+
+  MERCHANT_REQUEST_ID  String?
+  CHECKOUT_REQUEST_ID  String? @unique
+  MPESA_RECEIPT_NUMBER String? @unique
+
+  STATUS             MpesaTransactionStatus @default(PENDING)
+  RESULT_CODE        Int?
+  RESULT_DESCRIPTION String?
+
+  REQUEST_TIMESTAMP DateTime  @default(now())
+  TRANSACTION_DATE  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     orders   @relation(fields: [ORDER_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaction_to_order")
+
+  @@index([ORDER_ID])
+  @@index([CONTACT])
+  @@index([STATUS])
+  @@map("mpesa_transactions")
 }

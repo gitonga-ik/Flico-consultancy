@@ -40,7 +40,6 @@ export default async function CheckoutPage({ params }: PathParams) {
   if (!orderDetails) {
     return <OrderNotFound />;
   }
-  console.log(orderDetails);
   if (orderDetails.status === "CLOSED") {
     return <ClosedOrderPage />;
   }
