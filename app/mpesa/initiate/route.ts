@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       Password: password,
       Timestamp: timestamp,
       TransactionType: "CustomerPayBillOnline",
-      Amount: 1,
+      Amount: amount,
       PartyA: cleanPhone,
       PartyB: shortcode,
       PhoneNumber: cleanPhone,
@@ -91,9 +91,9 @@ export async function POST(request: Request) {
     });
 
     const data: TransactionInitiationInfo = await response.json();
-    console.log(data)
+    console.log(data);
 
-    if (data.ResponseCode === '0') {
+    if (data.ResponseCode === "0") {
       if (!(await recordMerchant(transactionId, data))) {
         return NextResponse.json(
           {
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           message: "Payment initiated. Check your phone for a payment prompt.",
-          transactionId: transactionId
+          transactionId: transactionId,
         },
         { status: 200 },
       );
