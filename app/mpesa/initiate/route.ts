@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       Password: password,
       Timestamp: timestamp,
       TransactionType: "CustomerPayBillOnline",
-      Amount: amount,
+      Amount: 1, // amount,
       PartyA: cleanPhone,
       PartyB: shortcode,
       PhoneNumber: cleanPhone,

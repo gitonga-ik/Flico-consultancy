@@ -46,11 +46,16 @@ export async function getAccessToken() {
 
     return token;
   } catch (error) {
+     if (error instanceof Error) {
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Underlying cause:", error.cause);
+  }
     console.log(
       JSON.stringify({
         timestamp: new Date().toISOString(),
         level: "error",
-        message: `Could not get M-Pesa authorization token.`,
+        message: `Could not get M-Pesa authorization token: ${error}`,
       }),
     );
     return false;
