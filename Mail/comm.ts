@@ -18,7 +18,7 @@ export async function sendVerificationMail(
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "no-reply@flico-consultancy.co.ke",
       to: email,
       subject: "Email Verified",
       react: VerificationEmail({
@@ -67,7 +67,7 @@ export async function sendDownloadMail(order: OrderDetails) {
   if (!order.email) throw new Error("Provide valid email");
   try {
     const { data, error } = await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "downloads@flico-consultancy.co.ke",
       to: order.email,
       subject: `Download ${order.book.title}` ,
       react: DownloadEmail({
